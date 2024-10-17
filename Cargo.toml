@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["sys", "lib"]
+
+[workspace.dependencies]
+bindgen = "^0.70"
+bitflags = { version = "^2", default-features = false }
+num-derive = "^0.4"
+num-traits = "^0.2"
+pin-project = "^1"
+tokio = { version = "^1", default-features = false }
+
+# workspace members
+tigerbeetle-unoff = { path = "./lib" }
+tigerbeetle-unoff-sys = { path = "./sys" }

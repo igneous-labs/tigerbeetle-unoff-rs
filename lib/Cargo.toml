@@ -1,0 +1,19 @@
+[package]
+name = "tigerbeetle-unoff"
+version = "0.1.0"
+edition = "2021"
+exclude = ["scripts/"]
+
+[features]
+default = []
+live-test = [] # assumes a tigerbeetle cluster is running at localhost port 3000 and tests against that
+
+[dependencies]
+bitflags = { workspace = true, default-features = false }
+pin-project = { workspace = true }
+num-derive = { workspace = true }
+num-traits = { workspace = true }
+tigerbeetle-unoff-sys = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt", "macros"] }

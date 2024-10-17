@@ -1,0 +1,2 @@
+[submodule "tigerbeetle"]
+	branch = static-lib-build-target
