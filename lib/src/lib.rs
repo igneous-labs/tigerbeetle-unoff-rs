@@ -7,9 +7,9 @@ use core::{mem::MaybeUninit, ptr::addr_of_mut};
 use err::TbStatusErr;
 use num_traits::FromPrimitive;
 use req::on_completion;
-use tigerbeetle_unoff_sys::{
-    tb_client_deinit, tb_client_init, tb_client_t, TB_STATUS_TB_STATUS_SUCCESS,
-};
+
+// re-export everything in sys
+pub use tigerbeetle_unoff_sys::*;
 
 pub mod consts;
 pub mod data_model;

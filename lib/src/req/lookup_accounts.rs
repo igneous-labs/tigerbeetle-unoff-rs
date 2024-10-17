@@ -13,10 +13,7 @@ impl Client {
     /// Caveats:
     /// - those of [`Self::request`] apply
     /// - `accounts.len()` must not exceed [`MAX_ACCOUNTS_PER_MSG`]
-    pub async fn lookup_accounts(
-        &self,
-        ids: &[u128],
-    ) -> Result<Box<LookupAccountsResp>, TbPacketErr> {
+    pub async fn lookup_accounts(&self, ids: &[u128]) -> Result<LookupAccountsResp, TbPacketErr> {
         assert!(ids.len() <= MAX_ACCOUNTS_PER_MSG);
         let packet = tb_packet_t {
             operation: TB_OPERATION_TB_OPERATION_LOOKUP_ACCOUNTS as u8,
@@ -34,8 +31,6 @@ impl Client {
             batch_allowed: 0,
             reserved: [0u8; 7],
         };
-        self.request(packet)
-            .await
-            .map(LookupAccountsResp::from_boxed_respbuf)
+        self.request(packet).await.map(LookupAccountsResp)
     }
 }

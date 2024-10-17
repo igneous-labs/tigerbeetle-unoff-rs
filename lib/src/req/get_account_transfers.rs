@@ -14,7 +14,7 @@ impl Client {
     pub async fn get_account_transfers(
         &self,
         filter: &tb_account_filter_t,
-    ) -> Result<Box<LookupTransfersResp>, TbPacketErr> {
+    ) -> Result<LookupTransfersResp, TbPacketErr> {
         let packet = tb_packet_t {
             operation: TB_OPERATION_TB_OPERATION_GET_ACCOUNT_TRANSFERS as u8,
             status: TB_PACKET_STATUS_TB_PACKET_OK as u8,
@@ -31,8 +31,6 @@ impl Client {
             batch_allowed: 0,
             reserved: [0u8; 7],
         };
-        self.request(packet)
-            .await
-            .map(LookupTransfersResp::from_boxed_respbuf)
+        self.request(packet).await.map(LookupTransfersResp)
     }
 }

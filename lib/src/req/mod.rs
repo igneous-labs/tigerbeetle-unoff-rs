@@ -27,12 +27,12 @@ impl Client {
     /// - the C client currently does nothing and never returns if the DB is unreachable (e.g. port closed).
     ///   This method should be at least raced with a `timeout()` fn to ensure recoverability from such a state.
     #[inline]
-    pub async fn request(&self, packet: tb_packet_t) -> Result<Box<RespBuf>, TbPacketErr> {
+    pub async fn request(&self, packet: tb_packet_t) -> Result<RespBuf, TbPacketErr> {
         Req::new(self.ptr, packet).await
     }
 }
 
-#[repr(C)]
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug)]
 enum ReqState {
     /// Safety: need to ensure that client is not Dropped (deinit)
@@ -40,7 +40,7 @@ enum ReqState {
     /// of [`crate::Client`] methods that take &self or &mut self
     Init(tb_client_t),
     AwaitingResp(MaybeUninit<Waker>),
-    Completed(MaybeUninit<Box<RespBuf>>),
+    Completed(MaybeUninit<RespBuf>),
 }
 
 impl ReqState {
@@ -64,7 +64,7 @@ impl ReqState {
                 // TODO: maybe can optimize here to not allocate if response failed.
                 // This will also make it so we don't need to rmb to assume_init_drop() the RespBuf.
                 // Need to ensure that failure responses will not set any data
-                *self = Self::Completed(MaybeUninit::new(RespBuf::from_raw_boxed(data, data_size)));
+                *self = Self::Completed(MaybeUninit::new(RespBuf::from_raw(data, data_size)));
                 waker.wake();
                 // waker dropped here, MaybeUninit does not double-drop
             }
@@ -91,7 +91,7 @@ impl Req {
 }
 
 impl Future for Req {
-    type Output = Result<Box<RespBuf>, TbPacketErr>;
+    type Output = Result<RespBuf, TbPacketErr>;
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let this_addr: *const Self = self.as_ref().get_ref();

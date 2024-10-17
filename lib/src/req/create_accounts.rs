@@ -17,7 +17,7 @@ impl Client {
     pub async fn create_accounts(
         &self,
         accounts: &[tb_account_t],
-    ) -> Result<Box<CreateAccountsResp>, TbPacketErr> {
+    ) -> Result<CreateAccountsResp, TbPacketErr> {
         assert!(accounts.len() <= MAX_ACCOUNTS_PER_MSG);
         let packet = tb_packet_t {
             operation: TB_OPERATION_TB_OPERATION_CREATE_ACCOUNTS as u8,
@@ -35,8 +35,6 @@ impl Client {
             batch_allowed: 0,
             reserved: [0u8; 7],
         };
-        self.request(packet)
-            .await
-            .map(CreateAccountsResp::from_boxed_respbuf)
+        self.request(packet).await.map(CreateAccountsResp)
     }
 }

@@ -17,7 +17,7 @@ impl Client {
     pub async fn create_transfers(
         &self,
         transfers: &[tb_transfer_t],
-    ) -> Result<Box<CreateTransfersResp>, TbPacketErr> {
+    ) -> Result<CreateTransfersResp, TbPacketErr> {
         assert!(transfers.len() <= MAX_TRANSFERS_PER_MSG);
         let packet = tb_packet_t {
             operation: TB_OPERATION_TB_OPERATION_CREATE_TRANSFERS as u8,
@@ -35,8 +35,6 @@ impl Client {
             batch_allowed: 0,
             reserved: [0u8; 7],
         };
-        self.request(packet)
-            .await
-            .map(CreateTransfersResp::from_boxed_respbuf)
+        self.request(packet).await.map(CreateTransfersResp)
     }
 }

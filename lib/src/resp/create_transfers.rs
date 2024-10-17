@@ -1,5 +1,3 @@
-use std::ptr::addr_of;
-
 use num_traits::FromPrimitive;
 use tigerbeetle_unoff_sys::{
     tb_create_transfers_result_t, TB_CREATE_TRANSFER_RESULT_TB_CREATE_TRANSFER_OK,
@@ -10,21 +8,15 @@ use crate::err::CreateTransferErr;
 use super::RespBuf;
 
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct CreateTransfersResp(pub(crate) RespBuf);
 
 impl CreateTransfersResp {
     #[inline]
-    pub(crate) fn from_boxed_respbuf(b: Box<RespBuf>) -> Box<Self> {
-        // sound because of repr(transparent)
-        unsafe { core::mem::transmute(b) }
-    }
-
-    #[inline]
     pub const fn as_slice(&self) -> &[tb_create_transfers_result_t] {
-        let len = unsafe { self.0.len.assume_init_read() } as usize
-            / core::mem::size_of::<tb_create_transfers_result_t>();
-        unsafe { core::slice::from_raw_parts(addr_of!(self.0.bytes).cast(), len) }
+        let byte_slice = self.0.as_slice();
+        let len = byte_slice.len() / core::mem::size_of::<tb_create_transfers_result_t>();
+        unsafe { core::slice::from_raw_parts(byte_slice.as_ptr().cast(), len) }
     }
 
     /// Yields Ok(index) for successes, Err((index, error)) for failures
